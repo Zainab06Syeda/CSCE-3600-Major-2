@@ -28,7 +28,10 @@ This is a basic shell program written in C that implements a simple shell with b
 
 ## Roles and Responsibilities
   Each group member was responsible for one of the the following operations
-    - 
+ -Dylan Throckmorton : builtin.c
+ -Snehitha Paruchuri : history.c
+ -Syeda Zainab : main.c
+ -Veronica Fuentes : shell.c
 
 ## Compilation
 To compile the program, run:
