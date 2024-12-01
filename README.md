@@ -31,7 +31,7 @@ This is a basic shell program written in C that implements a simple shell with b
  -Dylan Throckmorton : builtin.c
  -Snehitha Paruchuri : history.c
  -Syeda Zainab : main.c
- -Veronica Fuentes : shell.c
+ -Veronica Fuentes : shell.h
 
 ## Compilation
 To compile the program, run:
