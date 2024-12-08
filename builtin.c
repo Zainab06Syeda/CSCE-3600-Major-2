@@ -4,13 +4,14 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <errno.h>
+#include "shell.h"
 
 extern char **environ; // Access the environment variables
+char path[MAX_PATH_LENGTH] = ""; // Global path variable
 
 // Change directory
 void cd(char *path) {
     if (path == NULL) {
-        // If no argument is provided, change to HOME directory
         char *home = getenv("HOME");
         if (home == NULL) {
             perror("cd: Unable to find HOME");
@@ -20,32 +21,24 @@ void cd(char *path) {
             perror("cd");
         }
     } else {
-        // Change to the specified directory
         if (chdir(path) != 0) {
             perror("cd");
         }
     }
 }
 
-// Print environment path
-void path(char **args) {
+// Print or modify the PATH
+void handle_path(char **args) {
     if (args[1] == NULL) {
-        // Display the current path
         printf("%s\n", path);
-    } 
-    else if (strcmp(args[1], "+") == 0 && args[2] != NULL) // If the first arg is '+', append the path var args[2].
-    {
-        // Append the specified pathname
+    } else if (strcmp(args[1], "+") == 0 && args[2] != NULL) {
         if (strlen(path) + strlen(args[2]) + 1 < MAX_PATH_LENGTH) {
             if (strlen(path) > 0) strcat(path, ":");
             strcat(path, args[2]);
         } else {
             fprintf(stderr, "path: Path too long to add\n");
         }
-    } 
-    else if (strcmp(args[1], "-") == 0 && args[2] != NULL) // If '-' is the first arg, remove args[2] from the PATH
-    {
-        // Remove the specified pathname
+    } else if (strcmp(args[1], "-") == 0 && args[2] != NULL) {
         char *start = strstr(path, args[2]);
         if (start) {
             int len = strlen(args[2]);
@@ -60,27 +53,23 @@ void path(char **args) {
 }
 
 // Exit the shell
-void exit(int status) {
-    // Exit the shell
+void builtin_exit(int status) {
     exit(status);
 }
 
-// Built-in command handler
+// Handle built-in commands
 int handle_builtin_commands(char **args) {
-    if (args[0] == NULL) return 0; // No command
+    if (args[0] == NULL) return 0;
 
-    if (strcmp(args[0], "cd") == 0) // if command entered is cd, call "cd"
-    {
-        cd(&args);
+    if (strcmp(args[0], "cd") == 0) {
+        cd(args[1]);
         return 1;
-    }
-    if (strcmp(args[0], "path") == 0) {
-        path(&args);
+    } else if (strcmp(args[0], "path") == 0) {
+        handle_path(args);
         return 1;
-    }
-    if (strcmp(args[0], "exit") == 0) {
-        exit();
+    } else if (strcmp(args[0], "exit") == 0) {
+        builtin_exit(0);
     }
 
-    return 0; // Not a built-in command
+    return 0;
 }
